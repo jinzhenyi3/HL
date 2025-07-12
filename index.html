@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>免费黄历查询 - GitHub Pages部署</title>
-    <script src="https://cdn.jsdelivr.net/npm/lunar-javascript@latest/dist/lunar.min.js"></script>
+    <title>传统黄历查询 - 稳定版</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/lunar-javascript@1.5.1/dist/lunar.min.js"></script>
     <style>
         :root {
             --primary: #8e44ad;
@@ -16,8 +17,9 @@
             --danger: #e74c3c;
             --warning: #f39c12;
             --info: #3498db;
-            --border-radius: 12px;
-            --box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            --border-radius: 16px;
+            --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            --transition: all 0.3s ease;
         }
         
         * {
@@ -27,12 +29,18 @@
         }
         
         body {
-            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            font-family: 'Noto Serif SC', serif;
+            background: linear-gradient(135deg, #e8f4fc 0%, #d5e8f7 100%);
             color: #333;
             line-height: 1.6;
             min-height: 100vh;
             padding: 20px;
+            background-image: url('https://images.unsplash.com/photo-1519452635265-7b1fbfd1e4e0?q=80&w=1000');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-blend-mode: overlay;
+            background-color: rgba(255, 255, 255, 0.95);
         }
         
         .container {
@@ -44,36 +52,59 @@
         header {
             text-align: center;
             margin-bottom: 30px;
-            padding: 20px;
-            background: white;
+            padding: 30px;
+            background: linear-gradient(135deg, rgba(142, 68, 173, 0.95) 0%, rgba(155, 89, 182, 0.95) 100%);
             border-radius: var(--border-radius);
             box-shadow: var(--box-shadow);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 Q50,20 100,0 L100,100 Q50,80 0,100 Z" fill="rgba(255,255,255,0.1)"/></svg>');
+            background-size: cover;
         }
         
         h1 {
-            color: var(--primary);
-            font-size: 2.5rem;
+            font-size: 2.8rem;
             margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 2;
+            font-family: 'Ma Shan Zheng', cursive;
         }
         
         .subtitle {
-            color: var(--secondary);
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             margin-bottom: 20px;
+            opacity: 0.9;
+            position: relative;
+            z-index: 2;
         }
         
         .deployment-info {
-            background: #e8f4fc;
+            background: rgba(255, 255, 255, 0.15);
             padding: 15px;
             border-radius: var(--border-radius);
             margin-top: 20px;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
+            position: relative;
+            z-index: 2;
+            backdrop-filter: blur(5px);
         }
         
         .calendar-container {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 20px;
+            gap: 25px;
+            margin-bottom: 30px;
         }
         
         @media (min-width: 768px) {
@@ -83,140 +114,189 @@
         }
         
         .card {
-            background: white;
+            background: rgba(255, 255, 255, 0.98);
             border-radius: var(--border-radius);
             box-shadow: var(--box-shadow);
-            padding: 25px;
-            transition: transform 0.3s ease;
+            padding: 30px;
+            transition: var(--transition);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            backdrop-filter: blur(10px);
         }
         
         .card:hover {
             transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
         }
         
         .card-header {
             display: flex;
             align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #eee;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
         }
         
         .card-header i {
-            font-size: 1.8rem;
+            font-size: 2rem;
             margin-right: 15px;
             color: var(--primary);
+            width: 50px;
+            height: 50px;
+            background: rgba(142, 68, 173, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         .card-header h2 {
             color: var(--dark);
-            font-size: 1.5rem;
+            font-size: 1.6rem;
+            font-weight: 700;
         }
         
         .date-selector {
             display: flex;
             gap: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
         
         .date-selector input {
             flex: 1;
-            padding: 12px 15px;
+            padding: 14px 18px;
             border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 1rem;
+            border-radius: 10px;
+            font-size: 1.05rem;
+            font-family: inherit;
+            background: rgba(255, 255, 255, 0.9);
+            transition: var(--transition);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+        }
+        
+        .date-selector input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(142, 68, 173, 0.2);
         }
         
         .date-selector button {
             background: var(--primary);
             color: white;
             border: none;
-            padding: 12px 20px;
-            border-radius: 8px;
+            padding: 14px 24px;
+            border-radius: 10px;
             cursor: pointer;
             font-weight: 600;
-            transition: background 0.3s;
+            transition: var(--transition);
+            font-family: inherit;
+            font-size: 1rem;
+            box-shadow: 0 5px 12px rgba(142, 68, 173, 0.35);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         
         .date-selector button:hover {
             background: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(155, 89, 182, 0.45);
         }
         
         .lunar-info {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 18px;
+            margin-bottom: 25px;
         }
         
         .info-item {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
+            background: rgba(248, 249, 250, 0.8);
+            padding: 18px;
+            border-radius: 10px;
             text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
+            transition: var(--transition);
+            border: 1px solid rgba(0, 0, 0, 0.03);
+        }
+        
+        .info-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
         }
         
         .info-item .label {
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             color: #6c757d;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
+            font-weight: 500;
         }
         
         .info-item .value {
-            font-size: 1.2rem;
-            font-weight: 600;
+            font-size: 1.3rem;
+            font-weight: 700;
             color: var(--dark);
+            font-family: 'Ma Shan Zheng', cursive;
         }
         
         .yi-ji-container {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
+            gap: 20px;
         }
         
         .yi-box, .ji-box {
-            padding: 20px;
-            border-radius: 8px;
+            padding: 25px;
+            border-radius: 12px;
+            transition: var(--transition);
         }
         
         .yi-box {
             background: rgba(39, 174, 96, 0.1);
-            border: 1px solid rgba(39, 174, 96, 0.3);
+            border: 1px solid rgba(39, 174, 96, 0.2);
         }
         
         .ji-box {
             background: rgba(231, 76, 60, 0.1);
-            border: 1px solid rgba(231, 76, 60, 0.3);
+            border: 1px solid rgba(231, 76, 60, 0.2);
         }
         
         .yi-box h3, .ji-box h3 {
             display: flex;
             align-items: center;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+            font-size: 1.4rem;
         }
         
         .yi-box h3 i {
             color: var(--success);
-            margin-right: 10px;
+            margin-right: 12px;
+            background: rgba(39, 174, 96, 0.15);
+            padding: 8px;
+            border-radius: 50%;
         }
         
         .ji-box h3 i {
             color: var(--danger);
-            margin-right: 10px;
+            margin-right: 12px;
+            background: rgba(231, 76, 60, 0.15);
+            padding: 8px;
+            border-radius: 50%;
         }
         
         .items-container {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 12px;
         }
         
         .item {
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 0.9rem;
+            padding: 10px 18px;
+            border-radius: 24px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: var(--transition);
         }
         
         .yi-item {
@@ -224,71 +304,200 @@
             color: #196f3d;
         }
         
+        .yi-item:hover {
+            background: rgba(39, 174, 96, 0.3);
+            transform: translateY(-3px);
+        }
+        
         .ji-item {
             background: rgba(231, 76, 60, 0.2);
             color: #943126;
         }
         
+        .ji-item:hover {
+            background: rgba(231, 76, 60, 0.3);
+            transform: translateY(-3px);
+        }
+        
         .chongsha {
-            background: #fef9e7;
+            background: rgba(254, 249, 231, 0.8);
             padding: 20px;
-            border-radius: 8px;
+            border-radius: 10px;
             border: 1px solid #f9e79f;
             margin-top: 20px;
             text-align: center;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             font-weight: 600;
             color: #7d6608;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
         }
         
         .github-link {
             text-align: center;
-            margin-top: 30px;
-            padding: 20px;
-            background: white;
+            margin-top: 20px;
+            padding: 25px;
+            background: rgba(255, 255, 255, 0.95);
             border-radius: var(--border-radius);
             box-shadow: var(--box-shadow);
+            backdrop-filter: blur(10px);
         }
         
         .github-link a {
             display: inline-flex;
             align-items: center;
-            background: #24292e;
+            background: linear-gradient(to right, #24292e, #3a3f44);
             color: white;
             text-decoration: none;
-            padding: 12px 25px;
-            border-radius: 8px;
+            padding: 14px 32px;
+            border-radius: 10px;
             font-weight: 600;
-            transition: transform 0.3s;
+            transition: var(--transition);
+            font-size: 1.1rem;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
         }
         
         .github-link a:hover {
             transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+            background: linear-gradient(to right, #3a3f44, #24292e);
         }
         
         .github-link i {
-            margin-right: 10px;
-            font-size: 1.2rem;
+            margin-right: 12px;
+            font-size: 1.3rem;
         }
         
         footer {
             text-align: center;
-            margin-top: 30px;
-            padding: 20px;
+            margin-top: 40px;
+            padding: 25px;
             color: #6c757d;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            backdrop-filter: blur(10px);
+        }
+        
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.98);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+        
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid rgba(142, 68, 173, 0.2);
+            border-top: 5px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        .loading-text {
+            font-size: 1.2rem;
+            color: var(--dark);
+            font-weight: 500;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .date-display {
+            font-size: 1.1rem;
+            margin-top: 5px;
+            opacity: 0.8;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-good {
+            background-color: var(--success);
+        }
+        
+        .status-bad {
+            background-color: var(--danger);
+        }
+        
+        .error-message {
+            background: rgba(231, 76, 60, 0.15);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(231, 76, 60, 0.3);
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 500;
+            color: #943126;
+        }
+        
+        .error-message i {
+            margin-right: 10px;
+        }
+        
+        .refresh-btn {
+            background: var(--info);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 15px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+        }
+        
+        .refresh-btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
         }
     </style>
 </head>
 <body>
+    <div class="loading">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">正在加载黄历数据...</div>
+    </div>
+    
     <div class="container">
         <header>
-            <h1><i class="fas fa-calendar-alt"></i> 免费黄历查询</h1>
-            <p class="subtitle">基于 lunar-javascript 开源库 | 部署于 GitHub Pages</p>
+            <h1><i class="fas fa-calendar-alt"></i> 传统黄历查询</h1>
+            <p class="subtitle">基于 lunar-javascript 开源库 | 稳定运行版</p>
             <div class="deployment-info">
-                <p><i class="fas fa-info-circle"></i> 此应用完全运行在浏览器中，使用开源农历库实时计算黄历信息，无需服务器和API密钥。所有数据均在本地处理，保护您的隐私。</p>
+                <p><i class="fas fa-info-circle"></i> 此应用完全在浏览器中运行，使用开源农历库实时计算，无需服务器和API密钥</p>
             </div>
         </header>
+        
+        <div class="error-message" id="errorMessage" style="display: none;">
+            <i class="fas fa-exclamation-triangle"></i> 
+            <span id="errorText">黄历数据加载失败，请检查网络连接</span>
+            <div>
+                <button class="refresh-btn" id="refreshBtn"><i class="fas fa-sync-alt"></i> 刷新页面</button>
+            </div>
+        </div>
         
         <div class="calendar-container">
             <div class="card">
@@ -299,30 +508,34 @@
                 
                 <div class="date-selector">
                     <input type="date" id="datePicker">
-                    <button id="todayBtn">今天</button>
+                    <button id="todayBtn"><i class="fas fa-calendar-check"></i> 今天</button>
                 </div>
                 
                 <div class="lunar-info">
                     <div class="info-item">
                         <div class="label">公历日期</div>
                         <div class="value" id="solarDate">-</div>
+                        <div class="date-display" id="weekday"></div>
                     </div>
                     <div class="info-item">
                         <div class="label">农历日期</div>
                         <div class="value" id="lunarDate">-</div>
+                        <div class="date-display" id="lunarYear"></div>
                     </div>
                     <div class="info-item">
                         <div class="label">生肖</div>
                         <div class="value" id="zodiac">-</div>
+                        <div class="date-display" id="animalYear"></div>
                     </div>
                     <div class="info-item">
                         <div class="label">干支</div>
                         <div class="value" id="ganzhi">-</div>
+                        <div class="date-display" id="ganzhiYear"></div>
                     </div>
                 </div>
                 
                 <div class="chongsha" id="chongshaInfo">
-                    <i class="fas fa-exclamation-triangle"></i> 冲煞信息加载中...
+                    <i class="fas fa-exclamation-triangle"></i> <span id="chongshaText">正在加载冲煞信息...</span>
                 </div>
             </div>
             
@@ -349,9 +562,14 @@
                 </div>
                 
                 <div class="additional-info">
-                    <h3 style="margin: 20px 0 15px;"><i class="fas fa-info-circle"></i> 关于此应用</h3>
-                    <p>本黄历应用基于开源项目 <strong>lunar-javascript</strong> 构建，完全在浏览器中运行，无需连接任何服务器。</p>
-                    <p style="margin-top: 10px;">所有黄历数据均通过本地JavaScript计算生成，不收集任何用户数据，保护您的隐私。</p>
+                    <h3 style="margin: 25px 0 15px; display: flex; align-items: center;">
+                        <i class="fas fa-info-circle" style="color: var(--info); margin-right: 10px;"></i> 应用状态
+                    </h3>
+                    <div style="line-height: 1.8;">
+                        <p><span class="status-indicator status-good" id="libraryStatus"></span> 黄历库状态: <span id="libraryStatusText">正在检查...</span></p>
+                        <p><span class="status-indicator status-good" id="calcStatus"></span> 计算引擎状态: <span id="calcStatusText">正在检查...</span></p>
+                        <p><span class="status-indicator status-good" id="dataStatus"></span> 数据状态: <span id="dataStatusText">正在检查...</span></p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -360,82 +578,191 @@
             <a href="https://github.com/6tail/lunar-javascript" target="_blank">
                 <i class="fab fa-github"></i> 访问 lunar-javascript 开源项目
             </a>
+            <p style="margin-top: 15px; font-size: 0.95rem; color: #6c757d;">
+                <i class="fas fa-shield-alt"></i> 此版本已修复加载问题 | 状态监控 | 错误恢复功能
+            </p>
         </div>
         
         <footer>
-            <p>黄历数据基于开源算法计算，仅供参考 | 部署于GitHub Pages | 无需服务器和API密钥</p>
-            <p style="margin-top: 10px;">© 2023 开源黄历应用 | 完全免费使用</p>
+            <p>黄历数据基于开源算法计算，仅供参考 | 完全本地计算 | 无需服务器和API密钥</p>
+            <p style="margin-top: 10px;">© 2023 稳定版黄历应用 | 完全免费使用</p>
         </footer>
     </div>
 
     <script>
-        // 初始化日期选择器
-        const datePicker = document.getElementById('datePicker');
-        const todayBtn = document.getElementById('todayBtn');
-        
-        // 显示元素的引用
-        const solarDateEl = document.getElementById('solarDate');
-        const lunarDateEl = document.getElementById('lunarDate');
-        const zodiacEl = document.getElementById('zodiac');
-        const ganzhiEl = document.getElementById('ganzhi');
-        const chongshaInfoEl = document.getElementById('chongshaInfo');
-        const yiItemsEl = document.getElementById('yiItems');
-        const jiItemsEl = document.getElementById('jiItems');
-        
-        // 设置日期选择器默认值为今天
-        const today = new Date();
-        const formattedDate = today.toISOString().split('T')[0];
-        datePicker.value = formattedDate;
-        
-        // 更新黄历信息
-        function updateLunarInfo(date) {
-            const lunar = Lunar.fromDate(date);
+        // 等待页面完全加载
+        window.addEventListener('load', function() {
+            // 显示应用状态
+            document.getElementById('libraryStatusText').textContent = '已加载';
+            document.getElementById('calcStatusText').textContent = '准备就绪';
             
-            // 更新日期信息
-            solarDateEl.textContent = date.toLocaleDateString('zh-CN');
-            lunarDateEl.textContent = lunar.toString();
-            zodiacEl.textContent = lunar.getYearShengXiao() + '年';
-            ganzhiEl.textContent = lunar.getYearInGanZhi() + '年';
+            // 检查Lunar库是否加载成功
+            let libraryLoaded = false;
+            if (typeof Lunar !== 'undefined') {
+                libraryLoaded = true;
+                document.getElementById('libraryStatusText').textContent = '已加载 (v' + Lunar.VERSION + ')';
+                document.getElementById('calcStatusText').textContent = '初始化完成';
+            } else {
+                document.getElementById('libraryStatus').className = 'status-indicator status-bad';
+                document.getElementById('libraryStatusText').textContent = '加载失败';
+                document.getElementById('calcStatus').className = 'status-indicator status-bad';
+                document.getElementById('calcStatusText').textContent = '不可用';
+                showError('黄历库加载失败，请检查网络连接');
+            }
             
-            // 更新冲煞信息
-            chongshaInfoEl.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${lunar.getDayChongDesc()}`;
+            // 初始化日期选择器
+            const datePicker = document.getElementById('datePicker');
+            const todayBtn = document.getElementById('todayBtn');
+            const refreshBtn = document.getElementById('refreshBtn');
             
-            // 更新宜忌信息
-            const yiItems = lunar.getDayYi();
-            const jiItems = lunar.getDayJi();
+            // 显示元素的引用
+            const solarDateEl = document.getElementById('solarDate');
+            const lunarDateEl = document.getElementById('lunarDate');
+            const zodiacEl = document.getElementById('zodiac');
+            const ganzhiEl = document.getElementById('ganzhi');
+            const chongshaInfoEl = document.getElementById('chongshaText');
+            const yiItemsEl = document.getElementById('yiItems');
+            const jiItemsEl = document.getElementById('jiItems');
+            const weekdayEl = document.getElementById('weekday');
+            const lunarYearEl = document.getElementById('lunarYear');
+            const animalYearEl = document.getElementById('animalYear');
+            const ganzhiYearEl = document.getElementById('ganzhiYear');
+            const dataStatusEl = document.getElementById('dataStatusText');
             
-            yiItemsEl.innerHTML = '';
-            jiItemsEl.innerHTML = '';
+            // 星期几数组
+            const weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
             
-            yiItems.forEach(item => {
-                const itemEl = document.createElement('div');
-                itemEl.className = 'item yi-item';
-                itemEl.textContent = item;
-                yiItemsEl.appendChild(itemEl);
-            });
-            
-            jiItems.forEach(item => {
-                const itemEl = document.createElement('div');
-                itemEl.className = 'item ji-item';
-                itemEl.textContent = item;
-                jiItemsEl.appendChild(itemEl);
-            });
-        }
-        
-        // 初始化显示今天的黄历
-        updateLunarInfo(today);
-        
-        // 日期选择器事件监听
-        datePicker.addEventListener('change', function() {
-            const selectedDate = new Date(this.value);
-            updateLunarInfo(selectedDate);
-        });
-        
-        // 今天按钮事件监听
-        todayBtn.addEventListener('click', function() {
+            // 设置日期选择器默认值为今天
             const today = new Date();
-            datePicker.value = today.toISOString().split('T')[0];
-            updateLunarInfo(today);
+            const formattedDate = today.toISOString().split('T')[0];
+            datePicker.value = formattedDate;
+            
+            // 错误处理函数
+            function showError(message) {
+                document.getElementById('errorText').textContent = message;
+                document.getElementById('errorMessage').style.display = 'block';
+                document.getElementById('dataStatus').className = 'status-indicator status-bad';
+                dataStatusEl.textContent = '数据加载失败';
+            }
+            
+            // 更新黄历信息
+            function updateLunarInfo(date) {
+                try {
+                    if (!libraryLoaded) {
+                        throw new Error('黄历库未加载');
+                    }
+                    
+                    const lunar = Lunar.fromDate(date);
+                    
+                    // 更新日期信息
+                    solarDateEl.textContent = date.toLocaleDateString('zh-CN');
+                    lunarDateEl.textContent = lunar.getDayInChinese();
+                    zodiacEl.textContent = lunar.getYearShengXiao();
+                    ganzhiEl.textContent = lunar.getDayGanZhi();
+                    
+                    // 更新详细信息
+                    weekdayEl.textContent = weekdays[date.getDay()];
+                    lunarYearEl.textContent = lunar.getYearInChinese() + '年';
+                    animalYearEl.textContent = lunar.getYearShengXiao() + '年';
+                    ganzhiYearEl.textContent = lunar.getYearInGanZhi() + '年';
+                    
+                    // 更新冲煞信息
+                    chongshaInfoEl.textContent = lunar.getDayChongDesc();
+                    
+                    // 更新宜忌信息
+                    const yiItems = lunar.getDayYi();
+                    const jiItems = lunar.getDayJi();
+                    
+                    yiItemsEl.innerHTML = '';
+                    jiItemsEl.innerHTML = '';
+                    
+                    if (yiItems.length === 0) {
+                        const emptyItem = document.createElement('div');
+                        emptyItem.className = 'item yi-item';
+                        emptyItem.textContent = '无特别宜事';
+                        yiItemsEl.appendChild(emptyItem);
+                    } else {
+                        yiItems.forEach(item => {
+                            const itemEl = document.createElement('div');
+                            itemEl.className = 'item yi-item';
+                            itemEl.textContent = item;
+                            yiItemsEl.appendChild(itemEl);
+                        });
+                    }
+                    
+                    if (jiItems.length === 0) {
+                        const emptyItem = document.createElement('div');
+                        emptyItem.className = 'item ji-item';
+                        emptyItem.textContent = '无特别忌事';
+                        jiItemsEl.appendChild(emptyItem);
+                    } else {
+                        jiItems.forEach(item => {
+                            const itemEl = document.createElement('div');
+                            itemEl.className = 'item ji-item';
+                            itemEl.textContent = item;
+                            jiItemsEl.appendChild(itemEl);
+                        });
+                    }
+                    
+                    // 更新状态
+                    document.getElementById('dataStatus').className = 'status-indicator status-good';
+                    dataStatusEl.textContent = '数据加载成功';
+                    document.getElementById('errorMessage').style.display = 'none';
+                    
+                } catch (e) {
+                    console.error('黄历计算错误:', e);
+                    solarDateEl.textContent = '计算错误';
+                    lunarDateEl.textContent = '请刷新页面';
+                    chongshaInfoEl.textContent = '黄历数据加载失败';
+                    
+                    // 显示错误信息
+                    const errorMsg = document.createElement('div');
+                    errorMsg.className = 'item yi-item';
+                    errorMsg.textContent = '加载失败，请刷新页面';
+                    yiItemsEl.innerHTML = '';
+                    yiItemsEl.appendChild(errorMsg);
+                    
+                    showError('黄历计算错误: ' + e.message);
+                }
+            }
+            
+            // 初始化显示今天的黄历
+            if (libraryLoaded) {
+                updateLunarInfo(today);
+            }
+            
+            // 日期选择器事件监听
+            datePicker.addEventListener('change', function() {
+                const selectedDate = new Date(this.value);
+                updateLunarInfo(selectedDate);
+            });
+            
+            // 今天按钮事件监听
+            todayBtn.addEventListener('click', function() {
+                const today = new Date();
+                datePicker.value = today.toISOString().split('T')[0];
+                updateLunarInfo(today);
+            });
+            
+            // 刷新按钮事件监听
+            refreshBtn.addEventListener('click', function() {
+                window.location.reload();
+            });
+            
+            // 隐藏加载动画
+            setTimeout(function() {
+                document.querySelector('.loading').style.opacity = '0';
+                setTimeout(function() {
+                    document.querySelector('.loading').style.display = 'none';
+                }, 500);
+            }, 800);
+            
+            // 添加错误处理
+            window.addEventListener('error', function(e) {
+                console.error('全局错误:', e);
+                showError('发生意外错误: ' + e.message);
+                document.querySelector('.loading').style.display = 'none';
+            });
         });
     </script>
 </body>
